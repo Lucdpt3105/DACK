@@ -1,3 +1,4 @@
+<<<<<<< HEAD
 # 🚗 Traffic Sign Detection & Recognition System
 
 Phần mềm phát hiện, nhận dạng và đọc biển báo giao thông sử dụng **YOLOv8**, **OpenCV**, và **Tesseract OCR**.
@@ -230,3 +231,7 @@ Phát triển bởi AI Assistant - May 2026
 ### ⭐ Hãy star dự án nếu bạn thấy hữu ích!
 
 **Happy Coding!** 🎉
+=======
+# DACK
+D23CQPTUD01-N 
+>>>>>>> c599e0ec676c45661bb4ae0f5a266bc634d3e6c0
