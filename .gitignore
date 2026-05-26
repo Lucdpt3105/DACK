@@ -258,3 +258,5 @@ datasets/
 data_large/
 **/*.jpg (if > 5MB)
 **/*.png (if > 5MB)
+*.pt
+*.mp4
