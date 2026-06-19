@@ -1,0 +1,25 @@
+# Python 3.12 Compatible Requirements (CPU Only - No GPU)
+# Updated: June 2026
+# Dùng file này nếu máy không có GPU NVIDIA
+
+# PyTorch + CPU (No CUDA)
+torch>=2.4.0 --index-url https://download.pytorch.org/whl/cpu
+torchvision>=0.19.0 --index-url https://download.pytorch.org/whl/cpu
+torchaudio>=2.4.0 --index-url https://download.pytorch.org/whl/cpu
+
+# YOLOv8 & Computer Vision
+ultralytics>=8.2.0
+opencv-python>=4.8.0
+
+# Data Processing & ML
+numpy>=1.26.0
+scipy>=1.12.0
+PyYAML>=6.0
+
+# Image & Text Rendering
+Pillow>=10.0.0
+pytesseract>=0.3.10
+
+# Visualization & GUI
+matplotlib>=3.8.0
+tkinter  # (included with Python)

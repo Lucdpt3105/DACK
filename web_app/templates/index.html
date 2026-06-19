@@ -1,0 +1,209 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>🚦 Nhận Diện Biển Báo Giao Thông</title>
+    <link rel="stylesheet" href="/static/css/style.css">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
+</head>
+<body>
+    <!-- Header -->
+    <header class="header">
+        <div class="container">
+            <div class="header-content">
+                <div class="logo">
+                    <span class="logo-icon">🚦</span>
+                    <div class="logo-text">
+                        <h1>TrafficSign AI</h1>
+                        <p>Nhận diện biển báo giao thông Việt Nam</p>
+                    </div>
+                </div>
+                <div class="header-badge">
+                    <span class="badge">YOLOv8</span>
+                    <span class="badge">{{ total_classes }} classes</span>
+                </div>
+            </div>
+        </div>
+    </header>
+
+    <!-- Main Content -->
+    <main class="container">
+        <!-- Tab Selector -->
+        <div class="tabs">
+            <button class="tab active" data-tab="image" onclick="switchTab('image')">
+                <span class="tab-icon">📸</span>
+                <span>Nhận diện Ảnh</span>
+            </button>
+            <button class="tab" data-tab="video" onclick="switchTab('video')">
+                <span class="tab-icon">🎥</span>
+                <span>Nhận diện Video</span>
+            </button>
+            <button class="tab" data-tab="classes" onclick="switchTab('classes')">
+                <span class="tab-icon">📋</span>
+                <span>Danh sách Biển báo</span>
+            </button>
+        </div>
+
+        <!-- Tab: Image Detection -->
+        <div id="tab-image" class="tab-content active">
+            <div class="card">
+                <div class="card-header">
+                    <h2>📸 Nhận diện biển báo từ Ảnh</h2>
+                    <p>Tải lên một bức ảnh, AI sẽ tự động phát hiện và phân loại biển báo giao thông</p>
+                </div>
+                <div class="card-body">
+                    <div class="upload-zone" id="uploadZone" onclick="document.getElementById('imageInput').click()">
+                        <div class="upload-icon">📤</div>
+                        <p class="upload-text">Kéo thả ảnh vào đây hoặc <strong>nhấp để chọn</strong></p>
+                        <p class="upload-hint">Hỗ trợ: JPG, PNG, BMP, WebP</p>
+                        <input type="file" id="imageInput" accept="image/*" hidden onchange="handleImageUpload(event)">
+                    </div>
+
+                    <div class="options-row">
+                        <div class="option-group">
+                            <label class="option-label">🎯 Ngưỡng tự tin</label>
+                            <div class="range-wrapper">
+                                <input type="range" id="confSlider" min="0.05" max="0.95" step="0.05" value="0.25">
+                                <span class="range-value" id="confValue">0.25</span>
+                            </div>
+                        </div>
+                        <div class="option-group">
+                            <label class="option-label">🔧 Tiền xử lý</label>
+                            <div class="checkbox-group">
+                                <label class="checkbox-label">
+                                    <input type="checkbox" id="enhanceCheck"> Tăng cường
+                                </label>
+                                <label class="checkbox-label">
+                                    <input type="checkbox" id="claheCheck"> CLAHE
+                                </label>
+                                <label class="checkbox-label">
+                                    <input type="checkbox" id="sharpenCheck"> Làm nét
+                                </label>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Preview Area -->
+                    <div id="imageResult" class="result-area hidden">
+                        <div class="result-images">
+                            <div class="result-image-box">
+                                <h3>🖼 Ảnh gốc</h3>
+                                <img id="originalPreview" alt="Original">
+                            </div>
+                            <div class="result-image-box">
+                                <h3>🎯 Kết quả nhận diện</h3>
+                                <img id="resultPreview" alt="Result">
+                            </div>
+                        </div>
+                        <div class="result-info" id="resultInfo">
+                            <div class="result-stats">
+                                <span class="stat">Tổng: <strong id="totalSigns">0</strong> biển báo</span>
+                            </div>
+                            <div class="detection-list" id="detectionList"></div>
+                        </div>
+                    </div>
+
+                    <!-- Loading -->
+                    <div id="imageLoading" class="loading hidden">
+                        <div class="spinner"></div>
+                        <p>🔄 Đang xử lý ảnh...</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Tab: Video Detection -->
+        <div id="tab-video" class="tab-content">
+            <div class="card">
+                <div class="card-header">
+                    <h2>🎥 Nhận diện biển báo từ Video</h2>
+                    <p>Tải lên video, AI sẽ xử lý từng khung hình và tạo video kết quả</p>
+                </div>
+                <div class="card-body">
+                    <div class="upload-zone" id="videoUploadZone" onclick="document.getElementById('videoInput').click()">
+                        <div class="upload-icon">🎬</div>
+                        <p class="upload-text">Kéo thả video vào đây hoặc <strong>nhấp để chọn</strong></p>
+                        <p class="upload-hint">Hỗ trợ: MP4, AVI, MOV, MKV, WebM</p>
+                        <input type="file" id="videoInput" accept="video/*" hidden onchange="handleVideoUpload(event)">
+                    </div>
+
+                    <div class="options-row">
+                        <div class="option-group">
+                            <label class="option-label">🎯 Ngưỡng tự tin</label>
+                            <div class="range-wrapper">
+                                <input type="range" id="videoConfSlider" min="0.05" max="0.95" step="0.05" value="0.22">
+                                <span class="range-value" id="videoConfValue">0.22</span>
+                            </div>
+                        </div>
+                        <div class="option-group">
+                            <label class="option-label">
+                                <input type="checkbox" id="videoEnhanceCheck"> Tăng cường ảnh
+                            </label>
+                        </div>
+                    </div>
+
+                    <div id="videoResult" class="result-area hidden">
+                        <div class="result-images">
+                            <div class="result-image-box">
+                                <h3>🎥 Video kết quả</h3>
+                                <video id="videoResultPlayer" controls width="100%">
+                                    Your browser does not support video.
+                                </video>
+                            </div>
+                        </div>
+                        <div class="result-info">
+                            <div class="result-stats" id="videoStats"></div>
+                        </div>
+                    </div>
+
+                    <div id="videoLoading" class="loading hidden">
+                        <div class="spinner"></div>
+                        <p>🎥 Đang xử lý video... (có thể mất vài phút)</p>
+                        <div class="progress-bar">
+                            <div class="progress-fill" id="videoProgress"></div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Tab: Classes List -->
+        <div id="tab-classes" class="tab-content">
+            <div class="card">
+                <div class="card-header">
+                    <h2>📋 Danh sách {{ total_classes }} loại biển báo</h2>
+                    <p>Mô hình có thể nhận diện tất cả các loại biển báo giao thông Việt Nam</p>
+                </div>
+                <div class="card-body">
+                    <div class="search-box">
+                        <input type="text" id="classSearch" placeholder="🔍 Tìm kiếm biển báo..." oninput="filterClasses()">
+                    </div>
+                    <div class="classes-grid" id="classesGrid">
+                        {% for code, name in classes.items() %}
+                        <div class="class-item" data-name="{{ name }}" data-code="{{ code }}">
+                            <div class="class-color" style="background: {{ 'var(--red)' if 'prohibition' in code or 'no ' in code else 'var(--orange)' if 'limit' in code or 'danger' in code or 'warning' in code or 'slow' in code or 'crossing' in code else 'var(--blue)' if 'indication' in code or 'direction' in code or 'permission' in code or 'overpass' in code else 'var(--green)' if 'no more prohibition' in code else 'var(--gray)' }}"></div>
+                            <div class="class-info">
+                                <span class="class-name">{{ name }}</span>
+                                <span class="class-code">{{ code }}</span>
+                            </div>
+                        </div>
+                        {% endfor %}
+                    </div>
+                </div>
+            </div>
+        </div>
+    </main>
+
+    <!-- Footer -->
+    <footer class="footer">
+        <div class="container">
+            <p>🚦 Vietnamese Traffic Sign Detection - YOLOv8</p>
+            <p class="footer-sub">Đồ án nhận diện biển báo giao thông Việt Nam</p>
+        </div>
+    </footer>
+
+    <script src="/static/js/app.js"></script>
+</body>
+</html>
